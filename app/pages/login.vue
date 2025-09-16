@@ -1,0 +1,203 @@
+<template>
+<k-page class="flex items-center justify-center min-h-screen">
+    <div v-if="showLogin">
+    <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
+
+        <div class="flex justify-center">
+        <UserCircleIcon class="w-10 h-10 text-gray-600" />
+        </div>
+
+        <title class="flex justify-center text-3xl">Login</title>
+   
+      <k-list-input
+        outline
+        label="Email"
+        floating-label
+        type="email"
+        placeholder="Email"
+      >
+        
+      </k-list-input>
+
+      <k-list-input
+        outline
+        label="Passwort"
+        floating-label
+        type="password"
+        placeholder="Passwort"
+      >
+        
+      </k-list-input>
+
+      <div class="flex flex-col items-center gap-2">
+        <!-- 1) NuxtLink (Standard) -->
+        <NuxtLink
+          to="/account/update-password"
+          class="text-black hover:text-blue-600 underline"
+          @click="() => console.log('NuxtLink clicked')"
+        >
+          Passwort Vergessen? (NuxtLink)
+        </NuxtLink>
+
+        <!-- 2) Programmatic navigation as Button -->
+        <k-button
+          clear
+          class="text-black hover:text-blue-600"
+          @click="() => { console.log('Button navigateTo clicked'); navigateTo('/account/update-password') }"
+        >
+          Passwort Vergessen? (Button)
+        </k-button>
+
+        <!-- 3) Fallback: plain anchor to test raw navigation -->
+        <a
+          href="/account/update-password"
+          class="text-black hover:text-blue-600"
+          @click="() => console.log('Plain anchor clicked')"
+        >
+          Passwort Vergessen? (Anchor)
+        </a>
+      </div>
+
+        <br>
+        <div class="flex justify-center">
+          <k-button @click="signIn" raised class="w-60 h-11 text-xl">Login</k-button>
+        </div>
+        <br> 
+
+        
+        <div class="px-4 flex items-center gap-1">
+
+            <p class="text-sm">Noch kein Account?</p> 
+            
+            <k-button small clear 
+            class="text-blue-500 hover:text-blue-800 w-21 h-3.6"
+            @click="toggleView">
+            <u>Registrieren.</u>
+            </k-button>
+        </div>
+        
+    </k-list>
+    </div>
+
+    <div v-else>
+        <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
+
+        <div class="flex justify-center">
+            <UserCircleIcon class="w-10 h-10 text-gray-600" />
+        </div>
+
+        <title class="flex justify-center text-3xl">Registrierung</title>
+
+        
+          
+      <k-list-input
+        outline
+        label="Email"
+        floating-label
+        type="email"
+        placeholder="Email"
+      >
+        
+      </k-list-input>
+
+      <k-list-input
+        outline
+        label="Passwort"
+        floating-label
+        type="password"
+        placeholder="Passwort"
+      >
+        
+      </k-list-input>
+
+        <br>
+        <div class="flex justify-center">
+          <k-button @click="signUpWithPassword" raised class="w-60 h-11 text-xl">Registrieren</k-button>
+        </div>
+        <br>
+
+        <div class="px-4 flex items-center gap-1">
+
+            <p class="text-sm">Schon einen Account?</p>
+
+            <k-button small clear 
+            class="text-blue-500 hover:text-blue-800 w-10 h-3.6"
+            @click="toggleView">
+            <u>Login.</u>
+            </k-button>
+
+        </div>
+        
+    </k-list>
+    </div>
+  </k-page>
+</template>
+
+<script setup>
+ import {
+    kList,
+    kListInput,
+    kPage,
+    kNavbar,
+    kNavbarBackLink,
+    kButton,
+    kBlock,
+    kBlockTitle,
+  } from 'konsta/vue';
+
+import { ref, watch } from 'vue'
+import { UserCircleIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
+
+const supabase = useSupabaseClient()
+const email = ref('viruskillerhd33.yt@gmail.com')
+const password = ref('testtest')
+const user = useSupabaseUser()
+
+async function signIn() {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value,
+    options: {
+      emailRedirectTo: 'http://localhost:3000/confirm',
+    },
+  });
+ 
+  console.log('DATA', data, error);
+  /*if (error) {
+    toast.value.message = error.message;
+    toast.value.isOpen = true;
+ 
+  }*/
+ 
+}
+
+watch(user, () => {
+  if (user.value) {
+      // Redirect to protected page
+      return navigateTo('/')
+  }
+}, { immediate: true })
+
+
+const signUpWithPassword = async () => {
+  const { data, error } = await supabase.auth.signUp({
+    email: email.value,
+    password: password.value,
+    options: {
+      emailRedirectTo: 'http://localhost:3000/confirm',
+    },
+  })
+  if (error) {
+    console.log('Registrierung fehlgeschlagen:', error.message)
+  } else {
+    console.log('Registrierung erfolgreich:', data)
+  }
+}
+
+const showLogin = ref(true)
+
+function toggleView(){
+    showLogin.value = !showLogin.value
+}
+  
+</script>
