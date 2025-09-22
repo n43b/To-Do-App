@@ -1,6 +1,6 @@
 <template>
 <k-page class="flex items-center justify-center min-h-screen">
-    <div v-if="showLogin">
+    <div v-if="showWindows===1">
     <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
 
         <div class="flex justify-center">
@@ -28,35 +28,13 @@
       >
         
       </k-list-input>
-
-      <div class="flex flex-col items-center gap-2">
-        <!-- 1) NuxtLink (Standard) -->
-        <NuxtLink
-          to="/account/update-password"
-          class="text-black hover:text-blue-600 underline"
-          @click="() => console.log('NuxtLink clicked')"
-        >
-          Passwort Vergessen? (NuxtLink)
-        </NuxtLink>
-
-        <!-- 2) Programmatic navigation as Button -->
         <k-button
           clear
-          class="text-black hover:text-blue-600"
-          @click="() => { console.log('Button navigateTo clicked'); navigateTo('/account/update-password') }"
+          class="text-black hover:text-blue-800"
+          @click="showWindows=3"
         >
-          Passwort Vergessen? (Button)
+          <u>Passwort Vergessen?</u>
         </k-button>
-
-        <!-- 3) Fallback: plain anchor to test raw navigation -->
-        <a
-          href="/account/update-password"
-          class="text-black hover:text-blue-600"
-          @click="() => console.log('Plain anchor clicked')"
-        >
-          Passwort Vergessen? (Anchor)
-        </a>
-      </div>
 
         <br>
         <div class="flex justify-center">
@@ -71,7 +49,7 @@
             
             <k-button small clear 
             class="text-blue-500 hover:text-blue-800 w-21 h-3.6"
-            @click="toggleView">
+            @click="showWindows=2">
             <u>Registrieren.</u>
             </k-button>
         </div>
@@ -79,7 +57,7 @@
     </k-list>
     </div>
 
-    <div v-else>
+    <div v-else-if="showWindows===2">
         <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
 
         <div class="flex justify-center">
@@ -109,6 +87,13 @@
       >
         
       </k-list-input>
+      <k-button
+          clear
+          class="text-black hover:text-blue-800"
+          @click="showWindows=3"
+        >
+          <u>Passwort Vergessen?</u>
+        </k-button>
 
         <br>
         <div class="flex justify-center">
@@ -122,13 +107,40 @@
 
             <k-button small clear 
             class="text-blue-500 hover:text-blue-800 w-10 h-3.6"
-            @click="toggleView">
+            @click="showWindows=1">
             <u>Login.</u>
             </k-button>
 
         </div>
         
     </k-list>
+    </div>
+
+    <div v-else-if="showWindows===3">
+      <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
+
+        <div class="flex justify-center">
+            <UserCircleIcon class="w-10 h-10 text-gray-600" />
+        </div>
+
+        <title class="flex justify-center text-3xl">Passwort Vergessen</title>
+
+        
+          
+      <k-list-input
+        outline
+        label="Email"
+        floating-label
+        type="email"
+        placeholder="Deine Email"
+      >
+        <br>
+        <div class="flex justify-center">
+          <k-button @click="requestResetPassword" raised class="w-60 h-11 text-xl">Login</k-button>
+        </div>
+        <br> 
+      </k-list-input>
+      </k-list>
     </div>
   </k-page>
 </template>
@@ -159,16 +171,20 @@ async function signIn() {
     password: password.value,
     options: {
       emailRedirectTo: 'http://localhost:3000/confirm',
-    },
-  });
- 
-  console.log('DATA', data, error);
-  /*if (error) {
-    toast.value.message = error.message;
-    toast.value.isOpen = true;
- 
-  }*/
- 
+   },
+  })
+  if (error) {
+    console.log('Registrierung fehlgeschlagen:', error.message)
+  } else {
+    console.log('Registrierung erfolgreich:', data)
+  }
+}
+
+const requestResetPassword = async () => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email.value, {
+    redirectTo: 'http://localhost:3000/account/update-password',
+  })
+  if (error) console.log(error)
 }
 
 watch(user, () => {
@@ -194,10 +210,8 @@ const signUpWithPassword = async () => {
   }
 }
 
-const showLogin = ref(true)
 
-function toggleView(){
-    showLogin.value = !showLogin.value
-}
+const showWindows = ref(1)
+
   
 </script>
