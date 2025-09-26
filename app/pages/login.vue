@@ -191,7 +191,7 @@ async function signIn() {
     email: email.value,
     password: password.value,
     options: {
-      emailRedirectTo: 'http://localhost:3000/confirm',
+      emailRedirectTo: 'https://walrjgbwoierugbwiur4gw3iurbvi23u4b2.vercel.app/confirm',
    },
   })
   if (error) {
@@ -203,7 +203,7 @@ async function signIn() {
 
 const requestResetPassword = async () => {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo: 'http://localhost:3000/account/update-password',
+    redirectTo: 'https://walrjgbwoierugbwiur4gw3iurbvi23u4b2.vercel.app/account/update-password',
   })
   if (error) console.log(error)
 }
@@ -232,7 +232,7 @@ const signUpWithPassword = async () => {
     email: email.value,
     password: password.value,
     options: {
-      emailRedirectTo: 'http://localhost:3000/confirm',
+      emailRedirectTo: 'https://walrjgbwoierugbwiur4gw3iurbvi23u4b2.vercel.app/confirm',
     },
   })
   if (error) {
