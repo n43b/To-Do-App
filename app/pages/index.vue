@@ -1,20 +1,19 @@
 <template>
-  test
-  <k-page>
+    <k-page>
     <k-navbar title="To Do Liste">
       
       <template #left>
         <div>
-          &nbsp;&nbsp;&nbsp;<SunIcon class="w-7 h-7 text-gray-600 hover:text-yellow-600"/>&nbsp;&nbsp;&nbsp;
+          <SunIcon class="w-7 h-7 text-gray-600 hover:text-yellow-600"/>
         </div>
         <div>
-          &nbsp;&nbsp;&nbsp;<MoonIcon class="w-7 h-7 text-gray-600 hover:text-blue-600"/>&nbsp;&nbsp;&nbsp;
+          <MoonIcon class="w-7 h-7 text-gray-600 hover:text-blue-600"/>
         </div>
       </template>
-      
+    
       <template #right>
-        <h1  @click="signOut">&nbsp;&nbsp;&nbsp;Logout&nbsp;</h1>
-        <ArrowRightStartOnRectangleIcon class="w-7 h-7 text-gray-600" />&nbsp;&nbsp;
+        <k-button clear @click="signOut" class=" text-gray-600 font-bold">
+        Logout&nbsp;<ArrowRightStartOnRectangleIcon class="w-7 h-7 text-gray-600" /></k-button>
       </template>
   
       <template #subnavbar>
@@ -97,9 +96,16 @@
       <k-block-title>To Do</k-block-title>
       <k-list inset strong v-for="d of todo_data">
         <div v-if="!d.completed">
-        <k-list-item
+          
+        <k-list-item 
           :title="d.titel"
-          :key="d.id"/>
+          :key="d.id">
+
+          <template #after>
+              <k-button clear><PencilSquareIcon @click="() => (editOpend = true)" class="w-7 h-7 text-blue-500 hover:text-blue-300"/></k-button>
+          </template>
+
+          </k-list-item>
           <k-list-item>
             <template #inner>
 
@@ -125,6 +131,51 @@
             
             </div>
       </k-list>
+
+      <k-dialog :opened="editOpend" @backdropclick="() => (editOpend = false)">
+        <k-list inset-ios strong-ios>
+      <k-list-input
+        outline
+        label="Titel"
+        floating-label
+        type="title"
+        placeholder="Titel"
+        :value="todo.titel"
+        @input="todo.titel = $event.target.value"
+      >
+        
+      </k-list-input>
+
+      <k-list-input
+        outline
+        label="Beschreibung"
+        floating-label
+        type="beschreibung"
+        placeholder="Beschreibung"
+        :value="todo.description"
+        @input="todo.description = $event.target.value"
+      >
+        
+      </k-list-input>
+
+      <k-list-input
+        outline
+        label="Datum"
+        type="date"
+        placeholder="Bitte Auswählen..."
+        :value="todo.date_ToDo"
+        @input="todo.date_ToDo = $event.target.value"
+      >
+
+      </k-list-input>
+    </k-list>
+    <template #buttons>
+      <k-dialog-button strong @click="() => (editOpend = false)">
+        Bestätigen
+      </k-dialog-button>
+    </template>
+      </k-dialog>
+
     </div>
 
     <div v-else-if="activeSegmented===3">
@@ -134,7 +185,12 @@
         <div v-if="d.completed">
         <k-list-item
           :title="d.titel"
-          :key="d.id" />
+          :key="d.id">
+          
+          <template #after>
+              <PencilSquareIcon class="w-7 h-7 text-blue-500 hover:text-blue-300"/>
+          </template>
+        </k-list-item>
           <k-list-item>
             <template #inner>
 
@@ -158,6 +214,11 @@
             </k-list-item>
             </div>
       </k-list>
+
+      <k-dialog>
+
+      </k-dialog>
+
     </div>
 
   </k-page>
@@ -168,6 +229,8 @@ import {
   kFab,
   kButton,
   kBlock,
+  kDialog,
+  kDialogButton,
   kSegmented,
   kSegmentedButton,
   kPage,
@@ -216,6 +279,8 @@ const todo = ref({
   date_ToDo: '',
   completed: false
 })
+
+const editOpend = ref(false)
 
 const darkMode = ref()
 

@@ -15,23 +15,48 @@
         label="Passwort"
         floating-label
         type="password"
-        placeholder="Neue Passwort"
+        placeholder="Neues Passwort"
+        :value="password"
+        @input="password = $event.target.value"
+      />
+      <k-list-input
+        outline
+        label="Passwort Wiederholen"
+        floating-label
+        type="password"
+        placeholder="Neues Passwort Wiederholen"
+        :value="password2"
+        @input="password2 = $event.target.value"
       >
+        <div class="flex justify-center">
+        <div class="px-4 flex items-center gap-1">
 
-        <k-button
-          clear
-          class="text-black hover:text-blue-800"
-          @click="goLogin"
-        >
-          <u>Login</u>
-        </k-button>
+            <p class="text-sm">Zurück zum</p> 
+            
+            <k-button small clear 
+            class="text-blue-500 hover:text-blue-800 w-9 h-3.6"
+            @click="goLogin">
+            <u>Login</u>
+            </k-button>
+        </div>
+        </div>
+      </k-list-input>
 
+      <template v-if="passwordEqual">
         <br>
         <div class="flex justify-center">
-          <k-button @click="requestResetPassword" raised class="w-60 h-11 text-xl">Login</k-button>
+          <k-button @click="requestResetPassword" raised class="w-60 h-11 text-xl">Passwort Zurücksetzten</k-button>
         </div>
-        <br> 
-      </k-list-input>
+        <br>
+      </template>
+      <template v-else>
+        <br>
+        <div class="flex justify-center">
+          <k-button disabled raised class="w-60 h-11 text-xl">Passwort Zurücksetzten</k-button>
+        </div>
+        <br>
+      </template>
+
       </k-list>
   </k-page>
 </template>
@@ -48,11 +73,14 @@
     kBlockTitle,
   } from 'konsta/vue';
 
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { UserCircleIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
 
 const supabase = useSupabaseClient()
-const password = ref('testtest2')
+const password = ref('')
+const password2 = ref('')
+const passwordEqual = computed(() => password.value.trim().length > 0 && password.value.trim() === password2.value.trim())
+
 /*const user = useSupabaseUser()*/
 
 function goLogin() {
@@ -62,6 +90,9 @@ function goLogin() {
 const requestResetPassword = async () => {
   const { data, error } = await supabase.auth.updateUser({ password: password.value })
   if (error) console.log(error)
+  if (data) console.log(data)
+    
+  
 }
 
 /*watch(user, () => {

@@ -1,5 +1,5 @@
 <template>
-  <App theme="ios" :dark="false">
+  <App theme="ios" :dark="true" class="">
     <slot />
   </App>
 </template>

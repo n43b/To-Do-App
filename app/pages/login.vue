@@ -1,13 +1,20 @@
 <template>
-<k-page class="flex items-center justify-center min-h-screen">
+<k-page class="flex items-center justify-center">
     <div v-if="showWindows===1">
-    <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
+    <k-list inset-ios strong-ios class="max-w-2xl p-15">
 
         <div class="flex justify-center">
         <UserCircleIcon class="w-10 h-10 text-gray-600" />
         </div>
 
         <title class="flex justify-center text-3xl">Login</title>
+        <br>
+        
+        <template class="flex justify-center">
+        <k-button @click="signInWithGitHub" class="bg-blue-950 w-45"><Icon name="uil:github" style="color: white" size="2em"/>&nbsp;GitHub</k-button>
+        </template>
+
+        <p>_____________________________</p>
    
       <k-list-input
         outline
@@ -58,7 +65,7 @@
     </div>
 
     <div v-else-if="showWindows===2">
-        <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
+        <k-list inset-ios strong-ios class="max-w-2xl p-15">
 
         <div class="flex justify-center">
             <UserCircleIcon class="w-10 h-10 text-gray-600" />
@@ -117,7 +124,7 @@
     </div>
 
     <div v-else-if="showWindows===3">
-      <k-list inset-ios strong-ios class="w-full max-w-2xl p-10">
+      <k-list inset-ios strong-ios class="max-w-2xl p-15">
 
         <div class="flex justify-center">
             <UserCircleIcon class="w-10 h-10 text-gray-600" />
@@ -134,6 +141,20 @@
         type="email"
         placeholder="Deine Email"
       >
+      
+      <div class="flex justify-center">
+        <div class="px-4 flex items-center gap-1">
+
+            <p class="text-sm">Zurück zum</p> 
+            
+            <k-button small clear 
+            class="text-blue-500 hover:text-blue-800 w-9 h-3.6"
+            @click="showWindows=1">
+            <u>Login</u>
+            </k-button>
+        </div>
+        </div>
+
         <br>
         <div class="flex justify-center">
           <k-button @click="requestResetPassword" raised class="w-60 h-11 text-xl">Login</k-button>
@@ -159,10 +180,10 @@
 
 import { ref, watch } from 'vue'
 import { UserCircleIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
-
+   
 const supabase = useSupabaseClient()
-const email = ref('viruskillerhd33.yt@gmail.com')
-const password = ref('testtest')
+const email = ref('')
+const password = ref('')
 const user = useSupabaseUser()
 
 async function signIn() {
@@ -185,6 +206,17 @@ const requestResetPassword = async () => {
     redirectTo: 'http://localhost:3000/account/update-password',
   })
   if (error) console.log(error)
+}
+
+const signInWithGitHub = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'github'
+  })
+  if (error) {
+    console.log('Registrierung fehlgeschlagen:', error.message)
+  } else {
+    console.log('Registrierung erfolgreich:', data)
+  }
 }
 
 watch(user, () => {
