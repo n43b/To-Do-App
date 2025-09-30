@@ -182,8 +182,8 @@ import { ref, watch } from 'vue'
 import { UserCircleIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
    
 const supabase = useSupabaseClient()
-const email = ref('viruskillerhd33.yt@gmail.com')
-const password = ref('testtest2')
+const email = ref('')
+const password = ref('')
 const user = useSupabaseUser()
 
 async function signIn() {
@@ -191,7 +191,7 @@ async function signIn() {
     email: email.value,
     password: password.value,
     options: {
-      emailRedirectTo: 'https://walrjgbwoierugbwiur4gw3iurbvi23u4b2.vercel.app/confirm',
+      emailRedirectTo: 'https://nuxt-todo-app-v1.vercel.app/confirm',
    },
   })
   if (error) {
@@ -203,7 +203,7 @@ async function signIn() {
 
 const requestResetPassword = async () => {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo: 'https://walrjgbwoierugbwiur4gw3iurbvi23u4b2.vercel.app/account/update-password',
+    redirectTo: 'https://nuxt-todo-app-v1.vercel.app/account/update-password',
   })
   if (error) console.log(error)
 }
@@ -232,7 +232,7 @@ const signUpWithPassword = async () => {
     email: email.value,
     password: password.value,
     options: {
-      emailRedirectTo: 'https://walrjgbwoierugbwiur4gw3iurbvi23u4b2.vercel.app/confirm',
+      emailRedirectTo: 'https://nuxt-todo-app-v1.vercel.app/confirm',
     },
   })
   if (error) {
