@@ -3,16 +3,16 @@
     <k-navbar title="To Do Liste">
       
       <template #left>
-        <div>
-          <SunIcon class="w-7 h-7 text-gray-600 hover:text-yellow-600"/>
+        <div v-if="!darkMode">
+          <k-button rounded clear @click="toggleDark"><SunIcon class="w-7 h-7 text-gray-600 hover:text-yellow-600"/></k-button>
         </div>
-        <div>
-          <MoonIcon class="w-7 h-7 text-gray-600 hover:text-blue-600"/>
+        <div v-else-if="darkMode">
+          <k-button rounded clear class=" group hover:text-blue-600" @click="toggleDark"><MoonIcon class="w-7 h-7 text-gray-600 group-hover:text-blue-600"/></k-button>
         </div>
       </template>
     
       <template #right>
-        <k-button clear @click="signOut" class=" text-gray-600 font-bold">
+        <k-button rounded clear @click="signOut" class=" text-gray-600 font-bold">
         Logout&nbsp;<ArrowRightStartOnRectangleIcon class="w-7 h-7 text-gray-600" /></k-button>
       </template>
   
@@ -92,7 +92,7 @@
     </div>
 
     <div v-else-if="activeSegmented===2">
-      <pre>{{ todo_data }}</pre>
+      <pre>{{ active_todo }}</pre>
       <k-block-title>To Do</k-block-title>
       <k-list inset strong v-for="d of todo_data">
         <div v-if="!d.completed">
@@ -102,7 +102,8 @@
           :key="d.id">
 
           <template #after>
-              <k-button clear><PencilSquareIcon @click="() => (editOpend = true)" class="w-7 h-7 text-blue-500 hover:text-blue-300"/></k-button>
+              <k-button clear class="group hover:bg-red-500"><TrashIcon @click="() => (deleteOpend = true, active_todo = d)" class="w-7 h-7 text-red-500 group-hover:text-white"/></k-button>
+              <k-button clear class="group hover:bg-blue-500"><PencilSquareIcon @click="() => (editOpend = true, active_todo = d)" class="w-7 h-7 text-blue-500 group-hover:text-white"/></k-button>
           </template>
 
           </k-list-item>
@@ -132,7 +133,22 @@
             </div>
       </k-list>
 
-      <k-dialog :opened="editOpend" @backdropclick="() => (editOpend = false)">
+      <k-dialog class="w-[90vw] max-w-lg sm:max-w-xl md:max-w-2xl p-6" :opened="deleteOpend" @backdropclick="() => (deleteOpend = false)">
+    
+      <h2 class="text-xl font-bold">Löschen</h2>
+
+       <b class="flex justify-center text-xl">🚨 Wollen Sie es wirklich löschen? 🚨</b> 
+    
+
+    <template #buttons>
+      <k-dialog-button strong @click="deleteToDo">
+        Bestätigen
+      </k-dialog-button>
+    </template>
+  </k-dialog>
+
+      <k-dialog class="w-[90vw] max-w-lg sm:max-w-xl md:max-w-2xl p-6" :opened="editOpend" @backdropclick="() => (editOpend = false)">
+        <h2 class="text-xl font-bold">Löschen</h2>
         <k-list inset-ios strong-ios>
       <k-list-input
         outline
@@ -140,8 +156,8 @@
         floating-label
         type="title"
         placeholder="Titel"
-        :value="todo.titel"
-        @input="todo.titel = $event.target.value"
+        :value="active_todo.titel"
+        @input="active_todo.titel = $event.target.value"
       >
         
       </k-list-input>
@@ -152,8 +168,8 @@
         floating-label
         type="beschreibung"
         placeholder="Beschreibung"
-        :value="todo.description"
-        @input="todo.description = $event.target.value"
+        :value="active_todo.description"
+        @input="active_todo.description = $event.target.value"
       >
         
       </k-list-input>
@@ -163,8 +179,8 @@
         label="Datum"
         type="date"
         placeholder="Bitte Auswählen..."
-        :value="todo.date_ToDo"
-        @input="todo.date_ToDo = $event.target.value"
+        :value="active_todo.date_ToDo"
+        @input="active_todo.date_ToDo = $event.target.value"
       >
 
       </k-list-input>
@@ -241,7 +257,7 @@ import {
   kListInput,
 } from 'konsta/vue'
 
-import { ArrowRightStartOnRectangleIcon, PencilSquareIcon, SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
+import { ArrowRightStartOnRectangleIcon, PencilSquareIcon, SunIcon, MoonIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 const supabase = useSupabaseClient()
 
@@ -253,6 +269,7 @@ const signOut = async () => {
 }
 
 const todo_data = ref([])
+const active_todo = ref({})
 
 const {data, error} =  await supabase.from("App_ToDo").select("*")
 
@@ -273,6 +290,15 @@ async function updateDone(record, value) {
   await supabase.from("App_ToDo").upsert(record)
 }
 
+async function deleteToDo() {
+  console.log(active_todo)
+  const {data, error} = await supabase
+  .from('App_ToDo')
+  .delete()
+  .eq('id', active_todo.value.id)
+  console.log(error, data)
+}
+
 const todo = ref({
   titel: '',
   description: '',
@@ -280,8 +306,22 @@ const todo = ref({
   completed: false
 })
 
+const darkMode = ref(false)
+
+function toggleDark( ){
+window.setMode = (darkMode) => {
+  if (darkMode.value) {
+    document.documentElement.classList.add('dark')
+    darkMode.value = false
+  }
+    else {
+      document.documentElement.classList.remove('dark')
+      darkMode.value = true
+    } 
+  }
+}
 const editOpend = ref(false)
 
-const darkMode = ref()
+const deleteOpend = ref(false)
 
 </script>

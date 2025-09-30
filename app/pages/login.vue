@@ -182,8 +182,8 @@ import { ref, watch } from 'vue'
 import { UserCircleIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
    
 const supabase = useSupabaseClient()
-const email = ref('')
-const password = ref('')
+const email = ref('viruskillerhd33.yt@gmail.com')
+const password = ref('testtest2')
 const user = useSupabaseUser()
 
 async function signIn() {
