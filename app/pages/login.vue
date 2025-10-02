@@ -211,7 +211,9 @@ const requestResetPassword = async () => {
 const signInWithGitHub = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
   provider: 'github',
-  url: 'https://nuxt-todo-app-v1.vercel.app/'
+  options:{
+    redirectTo: 'https://nuxt-todo-app-v1.vercel.app/confirm'
+    }
   })
   if (error) {
     console.log('Registrierung fehlgeschlagen:', error.message)
